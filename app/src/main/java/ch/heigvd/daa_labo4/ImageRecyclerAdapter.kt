@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
  * @author Lazar Pavicevic
  * @author Maxime Scharwath
  */
-class ImageRecyclerAdapter(_items: List<Bitmap> = listOf()) :
+class ImageRecyclerAdapter(_items: List<Bitmap?> = listOf()) :
     RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder>() {
 
-    var items = listOf<Bitmap>()
+    var items = listOf<Bitmap?>()
         set(value) {
             val diffCallback = ImageDiffCallback(items, value)
             val diffItems = DiffUtil.calculateDiff(diffCallback)
@@ -38,7 +38,6 @@ class ImageRecyclerAdapter(_items: List<Bitmap> = listOf()) :
         private val progressBar = view.findViewById<ProgressBar>(R.id.progressbar)
 
         fun bind(bitmap: Bitmap) {
-
             // TODO Call the cache to get the image
         }
     }
@@ -51,6 +50,6 @@ class ImageRecyclerAdapter(_items: List<Bitmap> = listOf()) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        items[position]?.let { holder.bind(it) }
     }
 }
