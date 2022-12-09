@@ -10,7 +10,6 @@ import ch.heigvd.daa_labo4.workers.ClearCacheWorker
 import java.util.concurrent.TimeUnit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -30,8 +29,10 @@ class MainActivity : AppCompatActivity() {
     private val imageDownloader = ImageDownloader()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main)
         downloadImage("https://daa.iict.ch/images/9.jpg")
+
+        Cache.setDir(cacheDir)
 
         val recycler = findViewById<RecyclerView>(R.id.recycler)
         val adapter = ImageRecyclerAdapter()
