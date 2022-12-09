@@ -8,6 +8,10 @@ import android.widget.Button
 import androidx.work.*
 import ch.heigvd.daa_labo4.workers.ClearCacheWorker
 import java.util.concurrent.TimeUnit
+import androidx.lifecycle.lifecycleScope
+import androidx.work.WorkRequest
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +24,20 @@ class MainActivity : AppCompatActivity() {
     private val clearCachePeriodicRequest: WorkRequest =
         PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES)
             .build()
+
+    private val imageDownloader = ImageDownloader()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main);
+        downloadImage("https://daa.iict.ch/images/9.jpg");
+    }
+
+    private fun downloadImage(url: String): Job {
+        return lifecycleScope.launch {
+            val bytes = imageDownloader.downloadImage(url)
+            imageDownloader.decodeImage(bytes!!)
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
@@ -34,11 +52,6 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
     }
 
     private fun launchClearCache() {
