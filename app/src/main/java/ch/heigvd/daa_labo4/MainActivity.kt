@@ -8,6 +8,8 @@ import android.widget.Button
 import androidx.work.*
 import ch.heigvd.daa_labo4.workers.ClearCacheWorker
 import java.util.concurrent.TimeUnit
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkRequest
 import kotlinx.coroutines.Job
@@ -29,7 +31,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main);
-        downloadImage("https://daa.iict.ch/images/9.jpg");
+        downloadImage("https://daa.iict.ch/images/9.jpg")
+
+        val recycler = findViewById<RecyclerView>(R.id.recycler)
+        val adapter = ImageRecyclerAdapter()
+        recycler.adapter = adapter
+        recycler.layoutManager = GridLayoutManager(this, 3)
     }
 
     private fun downloadImage(url: String): Job {
