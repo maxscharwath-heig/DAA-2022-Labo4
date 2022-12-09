@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
     private val imageDownloader = ImageDownloader()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,6 +39,23 @@ class MainActivity : AppCompatActivity() {
         val adapter = ImageRecyclerAdapter()
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)
+
+        adapter.items = listOf(null, null, null)
+
+        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+
+                if (visibleItemCount + pastVisibleItems >= totalItemCount) {
+                    adapter.items = adapter.items + listOf(null, null)
+                }
+            }
+        })
+
     }
 
     private fun downloadImage(url: String): Job {
