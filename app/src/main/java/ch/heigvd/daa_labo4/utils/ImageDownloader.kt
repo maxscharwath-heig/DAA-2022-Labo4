@@ -15,10 +15,7 @@ class ImageDownloader {
 
     suspend fun downloadImage(url: String): ByteArray? = withContext(Dispatchers.IO) {
         try {
-            val test = URL(url).readBytes()
-
-            delay(1000)
-            test
+            URL(url).readBytes()
         } catch (e: Exception) {
             Log.w(TAG, "Error downloading image", e)
             null

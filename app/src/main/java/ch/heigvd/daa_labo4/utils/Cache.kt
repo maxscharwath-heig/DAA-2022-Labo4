@@ -3,6 +3,7 @@ package ch.heigvd.daa_labo4.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.File
+import java.nio.file.Files.createFile
 
 object Cache {
     private lateinit var cacheDir: File
@@ -12,12 +13,8 @@ object Cache {
         Cache.cacheDir = cacheDir
     }
 
-    fun setExpiration() {
-
-    }
-
     fun get(name: String): Bitmap? {
-        val file = File(cacheDir, name)
+        val file = File(cacheDir, "$name.jpg")
         if (file.exists() && file.canRead() && file.length() != 0L && !isExpired(file)) {
             return BitmapFactory.decodeFile(file.path);
         }
@@ -25,7 +22,7 @@ object Cache {
     }
 
     fun set(name: String, image: Bitmap) {
-        val file = File.createTempFile(name, ".jpg", cacheDir)
+        val file = File(cacheDir, "$name.jpg")
         file.writeBitmap(image)
     }
 

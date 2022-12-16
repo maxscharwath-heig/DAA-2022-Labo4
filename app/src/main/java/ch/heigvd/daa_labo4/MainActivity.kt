@@ -25,16 +25,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var clearCachePeriodicRequest: WorkRequest
 
-    private val imageRetriever = ImageRetriever(lifecycleScope, cacheDir)
+    //private val imageRetriever = ImageRetriever(lifecycleScope, cacheDir)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val items = List(10000) { "https://daa.iict.ch/images/$it.jpg" }
+        Cache.setDir(cacheDir)
+
+        val items = listOf(1..10000).flatten() // change to string
 
         val recycler = findViewById<RecyclerView>(R.id.recycler)
-        val adapter = ImageRecyclerAdapter(items, imageRetriever)
+        val adapter = ImageRecyclerAdapter(items, lifecycleScope)
 
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)

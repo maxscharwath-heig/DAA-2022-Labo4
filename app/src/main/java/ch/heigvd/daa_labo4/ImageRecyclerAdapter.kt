@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.heigvd.daa_labo4.utils.Cache
 import ch.heigvd.daa_labo4.utils.ImageDownloader
 import kotlinx.coroutines.*
+import androidx.lifecycle.LifecycleCoroutineScope
 
 /**
  * Adapter for images
@@ -18,10 +19,10 @@ import kotlinx.coroutines.*
  * @author Lazar Pavicevic
  * @author Maxime Scharwath
  */
-class ImageRecyclerAdapter(_items: List<String> = listOf(), private val imgRetriever: ImageRetriever) :
+class ImageRecyclerAdapter(_items: List<Int> = listOf(), private val scope: LifecycleCoroutineScope) :
     RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder>() {
 
-    private var items = listOf<String>()
+    private var items = listOf<Int>()
 
     init {
         items = _items
@@ -35,49 +36,33 @@ class ImageRecyclerAdapter(_items: List<String> = listOf(), private val imgRetri
 
         private var downloadJob: Job? = null
 
-        fun bind(bitmap: Bitmap) {
+        fun bind(position: Int) {
+            downloadJob = scope.launch{
 
-            /*
-            runBlocking {
-                val job = async(Dispatchers.IO) {
-                    imgRetriever.getImage(url)
+                var cachedBitmap = Cache.get(position.toString() + "test")
+
+                if (cachedBitmap == null) {
+                    val test = ImageDownloader()
+                    val bytes = test.downloadImage("https://daa.iict.ch/images/$position.jpg")
+                    cachedBitmap = test.decodeImage(bytes!!)
+                    Cache.set(position.toString() + "test", cachedBitmap!!)
                 }
 
-                val btmp = job.await()
-                image.setImageBitmap(btmp)
+                updateImageView(cachedBitmap)
                 image.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
             }
-*/
-/*
-            if (cachedBitmap == null) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val downloader = ImageDownloader()
-                    val bytes = downloader.downloadImage(url)
-                    val bitmap = downloader.decodeImage(bytes!!)
-                    Cache.set(url.hashCode().toString(), bitmap!!)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        image.setImageBitmap(bitmap)
-                        image.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
-                    }
-
-                }
-            } else {
-                CoroutineScope(Dispatchers.Main).launch {
-                    image.setImageBitmap(cachedBitmap)
-                    image.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                }
-            }
-
- */
         }
-
+/*
         fun unbind() {
             downloadJob?.cancel()
             progressBar.visibility = View.VISIBLE
             image.visibility = View.INVISIBLE
+        }
+
+ */
+        suspend fun updateImageView(bitmap: Bitmap) = withContext(Dispatchers.Main){
+            image.setImageBitmap(bitmap)
         }
     }
 
@@ -93,6 +78,6 @@ class ImageRecyclerAdapter(_items: List<String> = listOf(), private val imgRetri
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        holder.unbind()
+        // holder.unbind()
     }
 }
