@@ -39,21 +39,7 @@ class MainActivity : AppCompatActivity() {
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)
 
-        adapter.items = listOf(null, null, null)
-
-        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-
-                if (visibleItemCount + pastVisibleItems >= totalItemCount) {
-                    adapter.items = adapter.items + listOf(null, null)
-                }
-            }
-        })
+        adapter.items = List(10000) { "https://daa.iict.ch/images/$it.jpg" }
 
         clearCachePeriodicRequest =
             PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES).build()
