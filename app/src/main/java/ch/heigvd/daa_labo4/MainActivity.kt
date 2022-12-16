@@ -12,12 +12,12 @@ import java.util.concurrent.TimeUnit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkRequest
+import ch.heigvd.daa_labo4.utils.Cache
+import ch.heigvd.daa_labo4.utils.ImageDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var refreshBtn: Button
 
     private val clearCacheRequest: WorkRequest =
         OneTimeWorkRequestBuilder<ClearCacheWorker>()
@@ -25,31 +25,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var clearCachePeriodicRequest: WorkRequest
 
-    private val imageDownloader = ImageDownloader()
+    private val imageRetriever = ImageRetriever(lifecycleScope, cacheDir)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        downloadImage("https://daa.iict.ch/images/9.jpg")
 
-        Cache.setDir(cacheDir)
+        val items = List(10000) { "https://daa.iict.ch/images/$it.jpg" }
 
         val recycler = findViewById<RecyclerView>(R.id.recycler)
-        val adapter = ImageRecyclerAdapter()
+        val adapter = ImageRecyclerAdapter(items, imageRetriever)
+
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)
 
-        adapter.items = List(10000) { "https://daa.iict.ch/images/$it.jpg" }
-
         clearCachePeriodicRequest =
             PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES).build()
-    }
-
-    private fun downloadImage(url: String): Job {
-        return lifecycleScope.launch {
-            val bytes = imageDownloader.downloadImage(url)
-            imageDownloader.decodeImage(bytes!!)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -1,4 +1,4 @@
-package ch.heigvd.daa_labo4
+package ch.heigvd.daa_labo4.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,14 +6,19 @@ import java.io.File
 
 object Cache {
     private lateinit var cacheDir: File
+    private var expirationDelay = 60 * 5000L // 5 minutes
 
     fun setDir(cacheDir: File) {
-        this.cacheDir = cacheDir
+        Cache.cacheDir = cacheDir
+    }
+
+    fun setExpiration() {
+
     }
 
     fun get(name: String): Bitmap? {
         val file = File(cacheDir, name)
-        if (file.exists()) {
+        if (file.exists() && file.canRead() && file.length() != 0L && !isExpired(file)) {
             return BitmapFactory.decodeFile(file.path);
         }
         return null
@@ -28,7 +33,15 @@ object Cache {
         cacheDir.deleteRecursively()
     }
 
-    private fun File.writeBitmap(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 90) {
+    private fun isExpired(file: File): Boolean {
+        return file.lastModified() < System.currentTimeMillis() - expirationDelay
+    }
+
+    private fun File.writeBitmap(
+        bitmap: Bitmap,
+        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+        quality: Int = 90
+    ) {
         outputStream().use { out ->
             bitmap.compress(format, quality, out)
             out.flush()
