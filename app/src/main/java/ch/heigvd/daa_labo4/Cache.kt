@@ -2,7 +2,9 @@ package ch.heigvd.daa_labo4
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import java.io.File
+import java.nio.file.Files
 
 object Cache {
     private lateinit var cacheDir: File
@@ -10,6 +12,7 @@ object Cache {
 
     fun setDir(cacheDir: File) {
         Cache.cacheDir = cacheDir
+        createCacheDir()
     }
 
     fun get(name: String): Bitmap? {
@@ -27,6 +30,13 @@ object Cache {
 
     fun clear() {
         cacheDir.deleteRecursively()
+        createCacheDir()
+    }
+
+    private fun createCacheDir() {
+        if (!cacheDir.exists()) {
+            Files.createDirectory(cacheDir.toPath())
+        }
     }
 
     private fun isExpired(file: File): Boolean {
