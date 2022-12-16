@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import androidx.lifecycle.lifecycleScope
 import androidx.work.*
 import ch.heigvd.daa_labo4.workers.ClearCacheWorker
 import java.util.concurrent.TimeUnit
@@ -22,9 +23,7 @@ class MainActivity : AppCompatActivity() {
         OneTimeWorkRequestBuilder<ClearCacheWorker>()
             .build()
 
-    private val clearCachePeriodicRequest: WorkRequest =
-        PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES)
-            .build()
+    private lateinit var clearCachePeriodicRequest: WorkRequest
 
     private val imageDownloader = ImageDownloader()
 
@@ -56,6 +55,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        clearCachePeriodicRequest =
+            PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES).build()
     }
 
     private fun downloadImage(url: String): Job {

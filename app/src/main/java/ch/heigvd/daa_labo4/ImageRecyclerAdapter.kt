@@ -39,6 +39,7 @@ class ImageRecyclerAdapter(_items: List<Bitmap?> = listOf()) :
 
         fun bind(bitmap: Bitmap) {
             // TODO Call the cache to get the image
+            // Cache.get("")
         }
     }
 

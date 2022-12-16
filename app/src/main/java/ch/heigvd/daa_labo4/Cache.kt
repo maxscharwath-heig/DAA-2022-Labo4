@@ -1,11 +1,10 @@
 package ch.heigvd.daa_labo4
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import java.io.File
 
-// TODO: give path
 object Cache {
-    private val cache = HashMap<String, Bitmap>()
     private lateinit var cacheDir: File
 
     fun setDir(cacheDir: File) {
@@ -13,28 +12,26 @@ object Cache {
     }
 
     fun get(name: String): Bitmap? {
-        if (cache.containsKey(name)) {
-            return null
-        }
-
-        // TODO: get the file
-
         val file = File(cacheDir, name)
-
+        if (file.exists()) {
+            return BitmapFactory.decodeFile(file.path);
+        }
         return null
     }
 
     fun set(name: String, image: Bitmap) {
-        cache[name] = image
-        File.createTempFile("name", ".jpg", cacheDir)
+        val file = File.createTempFile(name, ".jpg", cacheDir)
+        file.writeBitmap(image)
     }
 
     fun clear() {
-        cache.clear()
+        cacheDir.deleteRecursively()
     }
 
-    private fun storeBitmapAsFile(bitmap: Bitmap) {
-        // https://stackoverflow.com/questions/15662258/how-to-save-a-bitmap-on-internal-storage
-
+    private fun File.writeBitmap(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 90) {
+        outputStream().use { out ->
+            bitmap.compress(format, quality, out)
+            out.flush()
+        }
     }
 }
