@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import ch.heigvd.daa_labo4.utils.Cache
-import ch.heigvd.daa_labo4.utils.ImageDownloader
 import kotlinx.coroutines.*
 import androidx.lifecycle.LifecycleCoroutineScope
+import java.net.URL
 
 /**
  * Adapter for images
@@ -19,10 +18,13 @@ import androidx.lifecycle.LifecycleCoroutineScope
  * @author Lazar Pavicevic
  * @author Maxime Scharwath
  */
-class ImageRecyclerAdapter(_items: List<Int> = listOf(), private val scope: LifecycleCoroutineScope) :
+class ImageRecyclerAdapter(
+    _items: List<URL> = listOf(),
+    private val scope: LifecycleCoroutineScope
+) :
     RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder>() {
 
-    private var items = listOf<Int>()
+    private var items = listOf<URL>()
 
     init {
         items = _items
@@ -36,34 +38,36 @@ class ImageRecyclerAdapter(_items: List<Int> = listOf(), private val scope: Life
 
         private var downloadJob: Job? = null
 
-        fun bind(position: Int) {
-            downloadJob = scope.launch{
-
-                var cachedBitmap = Cache.get(position.toString() + "test")
-
-                if (cachedBitmap == null) {
-                    val test = ImageDownloader()
-                    val bytes = test.downloadImage("https://daa.iict.ch/images/$position.jpg")
-                    cachedBitmap = test.decodeImage(bytes!!)
-                    Cache.set(position.toString() + "test", cachedBitmap!!)
-                }
-
+        fun bind(url: URL) {
+            downloadJob = scope.launch {
+                val cachedBitmap = getBitmap(url.path.substring(url.path.lastIndexOf('/') + 1), url)
                 updateImageView(cachedBitmap)
-                image.visibility = View.VISIBLE
-                progressBar.visibility = View.GONE
             }
         }
-/*
+
         fun unbind() {
             downloadJob?.cancel()
             progressBar.visibility = View.VISIBLE
             image.visibility = View.INVISIBLE
         }
 
- */
-        suspend fun updateImageView(bitmap: Bitmap) = withContext(Dispatchers.Main){
+        private suspend fun updateImageView(bitmap: Bitmap) = withContext(Dispatchers.Main) {
             image.setImageBitmap(bitmap)
+            image.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
         }
+
+        private suspend fun getBitmap(filename: String, url: URL): Bitmap =
+            withContext(Dispatchers.IO) {
+                var cachedBitmap = Cache.get(filename)
+                if (cachedBitmap == null) {
+                    val test = ImageDownloader()
+                    val bytes = test.downloadImage(url)
+                    cachedBitmap = test.decodeImage(bytes!!)
+                    Cache.set(filename, cachedBitmap!!)
+                }
+                cachedBitmap
+            }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -78,6 +82,6 @@ class ImageRecyclerAdapter(_items: List<Int> = listOf(), private val scope: Life
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        // holder.unbind()
+        holder.unbind()
     }
 }

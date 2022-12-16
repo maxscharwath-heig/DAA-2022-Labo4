@@ -1,4 +1,4 @@
-package ch.heigvd.daa_labo4.utils
+package ch.heigvd.daa_labo4
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,9 +13,10 @@ class ImageDownloader {
         private const val TAG = "ImageDownloader"
     }
 
-    suspend fun downloadImage(url: String): ByteArray? = withContext(Dispatchers.IO) {
+    suspend fun downloadImage(url: URL): ByteArray? = withContext(Dispatchers.IO) {
         try {
-            URL(url).readBytes()
+            delay(500)
+            url.readBytes()
         } catch (e: Exception) {
             Log.w(TAG, "Error downloading image", e)
             null
