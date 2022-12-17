@@ -11,6 +11,10 @@ import java.util.concurrent.TimeUnit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
@@ -73,6 +77,11 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        lifecycleScope.coroutineContext.cancelChildren()
     }
 
     private fun launchClearCache() {
