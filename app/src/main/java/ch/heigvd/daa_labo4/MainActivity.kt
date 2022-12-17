@@ -54,7 +54,10 @@ class MainActivity : AppCompatActivity() {
 
         // Bind the periodic cache clear
         clearCachePeriodicRequest =
-            PeriodicWorkRequestBuilder<ClearCacheWorker>(CLEAR_CACHE_INTERVAL, TimeUnit.MINUTES).build()
+            PeriodicWorkRequestBuilder<ClearCacheWorker>(
+                CLEAR_CACHE_INTERVAL,
+                TimeUnit.MINUTES
+            ).build()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
