@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.heigvd.daa_labo4.Cache
-import ch.heigvd.daa_labo4.ImageDownloader
 
 /**
  * Worker for deleting files in the cache directory
@@ -18,7 +17,7 @@ class ClearCacheWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
     companion object {
-        private val TAG = ImageDownloader::class.qualifiedName
+        private val TAG = ClearCacheWorker::class.qualifiedName
     }
 
     override fun doWork(): Result {

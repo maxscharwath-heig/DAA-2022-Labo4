@@ -2,7 +2,6 @@ package ch.heigvd.daa_labo4
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import java.io.File
 import java.nio.file.Files
 
