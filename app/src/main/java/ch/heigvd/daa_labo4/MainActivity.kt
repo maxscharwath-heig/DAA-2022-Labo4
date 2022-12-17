@@ -13,6 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkRequest
 import java.net.URL
 
+/**
+ * Main activity of the application
+ *
+ * @author Nicolas Crausaz
+ * @author Lazar Pavicevic
+ * @author Maxime Scharwath
+ */
 class MainActivity : AppCompatActivity() {
 
     private val clearCacheRequest: WorkRequest =
@@ -21,13 +28,20 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var clearCachePeriodicRequest: WorkRequest
 
+    companion object {
+        const val CLEAR_CACHE_INTERVAL = 15L
+        const val PICTURES_NB = 10000
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Init the cache object default path
         Cache.setDir(cacheDir)
 
-        val items = List(10000) {
+        // Generate list of URLs
+        val items = List(PICTURES_NB) {
             val num = it + 1
             URL("https://daa.iict.ch/images/$num.jpg")
         }
@@ -38,8 +52,9 @@ class MainActivity : AppCompatActivity() {
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)
 
+        // Bind the periodic cache clear
         clearCachePeriodicRequest =
-            PeriodicWorkRequestBuilder<ClearCacheWorker>(15, TimeUnit.MINUTES).build()
+            PeriodicWorkRequestBuilder<ClearCacheWorker>(CLEAR_CACHE_INTERVAL, TimeUnit.MINUTES).build()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

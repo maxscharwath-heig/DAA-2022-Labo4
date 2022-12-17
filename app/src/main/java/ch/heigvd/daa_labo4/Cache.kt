@@ -6,9 +6,16 @@ import android.util.Log
 import java.io.File
 import java.nio.file.Files
 
+/**
+ * Cache is a singleton used to interact with the cache directory
+ *
+ * @author Nicolas Crausaz
+ * @author Lazar Pavicevic
+ * @author Maxime Scharwath
+ */
 object Cache {
     private lateinit var cacheDir: File
-    private var expirationDelay = 60 * 5000L // 5 minutes
+    private var expirationDelay = 60 * 5000L // Files expire after 5 minutes
 
     fun setDir(cacheDir: File) {
         Cache.cacheDir = cacheDir

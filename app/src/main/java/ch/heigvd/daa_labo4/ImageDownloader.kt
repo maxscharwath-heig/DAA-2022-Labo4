@@ -8,9 +8,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URL
 
+/**
+ * Helpers for image downloading & decoding
+ *
+ * @author Nicolas Crausaz
+ * @author Lazar Pavicevic
+ * @author Maxime Scharwath
+ */
 class ImageDownloader {
     companion object {
-        private const val TAG = "ImageDownloader"
+        private val TAG = ImageDownloader::class.qualifiedName
     }
 
     suspend fun downloadImage(url: URL): ByteArray? = withContext(Dispatchers.IO) {

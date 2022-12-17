@@ -61,9 +61,9 @@ class ImageRecyclerAdapter(
             withContext(Dispatchers.IO) {
                 var cachedBitmap = Cache.get(filename)
                 if (cachedBitmap == null) {
-                    val test = ImageDownloader()
-                    val bytes = test.downloadImage(url)
-                    cachedBitmap = test.decodeImage(bytes!!)
+                    val downloader = ImageDownloader()
+                    val bytes = downloader.downloadImage(url)
+                    cachedBitmap = downloader.decodeImage(bytes!!)
                     Cache.set(filename, cachedBitmap!!)
                 }
                 cachedBitmap
