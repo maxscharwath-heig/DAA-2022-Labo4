@@ -1,5 +1,6 @@
 package ch.heigvd.daa_labo4
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -11,10 +12,7 @@ import java.util.concurrent.TimeUnit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
@@ -26,11 +24,11 @@ import java.net.URL
  */
 class MainActivity : AppCompatActivity() {
 
-    private val clearCacheRequest: WorkRequest =
-        OneTimeWorkRequestBuilder<ClearCacheWorker>()
-            .build()
-
     private lateinit var clearCachePeriodicRequest: WorkRequest
+
+    private lateinit var recycler: RecyclerView
+
+    private lateinit var adapter: ImageRecyclerAdapter
 
     companion object {
         const val CLEAR_CACHE_INTERVAL = 15L
@@ -50,9 +48,8 @@ class MainActivity : AppCompatActivity() {
             URL("https://daa.iict.ch/images/$num.jpg")
         }
 
-        val recycler = findViewById<RecyclerView>(R.id.recycler)
-        val adapter = ImageRecyclerAdapter(items, lifecycleScope)
-
+        recycler = findViewById(R.id.recycler)
+        adapter = ImageRecyclerAdapter(items, lifecycleScope)
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(this, 3)
 
@@ -62,6 +59,10 @@ class MainActivity : AppCompatActivity() {
                 CLEAR_CACHE_INTERVAL,
                 TimeUnit.MINUTES
             ).build()
+
+        WorkManager
+            .getInstance(applicationContext)
+            .enqueue(clearCachePeriodicRequest)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -84,9 +85,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.coroutineContext.cancelChildren()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun launchClearCache() {
+        val clearCacheRequest = OneTimeWorkRequest.Builder(ClearCacheWorker::class.java).build()
         WorkManager
             .getInstance(applicationContext)
             .enqueue(clearCacheRequest)
+        adapter.notifyDataSetChanged()
     }
 }
