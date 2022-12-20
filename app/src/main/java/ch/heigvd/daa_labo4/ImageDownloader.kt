@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URL
 
@@ -22,7 +21,6 @@ class ImageDownloader {
 
     suspend fun downloadImage(url: URL): ByteArray? = withContext(Dispatchers.IO) {
         try {
-            delay(500)
             url.readBytes()
         } catch (e: Exception) {
             Log.w(TAG, "Error downloading image", e)

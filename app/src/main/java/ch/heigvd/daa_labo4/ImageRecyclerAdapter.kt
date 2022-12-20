@@ -57,17 +57,16 @@ class ImageRecyclerAdapter(
             progressBar.visibility = View.GONE
         }
 
-        private suspend fun getBitmap(filename: String, url: URL): Bitmap =
-            withContext(Dispatchers.IO) {
-                var cachedBitmap = Cache.get(filename)
-                if (cachedBitmap == null) {
-                    val downloader = ImageDownloader()
-                    val bytes = downloader.downloadImage(url)
-                    cachedBitmap = downloader.decodeImage(bytes!!)
-                    Cache.set(filename, cachedBitmap!!)
-                }
-                cachedBitmap
+        private suspend fun getBitmap(filename: String, url: URL): Bitmap {
+            var cachedBitmap = Cache.get(filename)
+            if (cachedBitmap == null) {
+                val downloader = ImageDownloader()
+                val bytes = downloader.downloadImage(url)
+                cachedBitmap = downloader.decodeImage(bytes!!)
+                Cache.set(filename, cachedBitmap!!)
             }
+           return  cachedBitmap
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
